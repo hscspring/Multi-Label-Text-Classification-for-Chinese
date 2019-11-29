@@ -1,0 +1,8 @@
+tqdm
+pnlp
+demjson
+pytorch-transformers==1.1.0
+matplotlib
+jieba
+pandas
+scikit-learn

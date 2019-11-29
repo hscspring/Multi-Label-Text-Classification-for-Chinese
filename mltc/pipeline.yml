@@ -1,0 +1,36 @@
+# pipeline:
+#   preprocessor: "ChineseChar"
+#   pretrain: "Bert"
+#   postprocessor: "Bert"
+#   classifier: "BertFC"
+
+# pipeline:
+#   preprocessor: "ChineseChar"
+#   pretrain: "Bert"
+#   postprocessor: "Bert"
+#   classifier: "BertCNN"
+
+pipeline:
+  preprocessor: "ChineseChar"
+  pretrain: "Bert"
+  postprocessor: "Bert"
+  classifier: "BertRCNN"
+
+# pipeline:
+#   preprocessor: "ChineseChar"
+#   pretrain: "Bert"
+#   postprocessor: "Bert"
+#   classifier: "BertDPCNN"
+
+# pipeline:
+#   preprocessor: "ChineseChar"
+#   pretrain: "Nopretrain"
+#   postprocessor: "Nopretrain"
+#   classifier: "TextCNN"
+
+# pipeline:
+#   preprocessor: "ChineseWord"
+#   pretrain: "Nopretrain"
+#   postprocessor: "Nopretrain"
+#   classifier: "TextCNN"
+
