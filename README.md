@@ -20,27 +20,10 @@ pip install -r requirements.txt
 
 - Prepare dataset
 
-    - Can be download here: [dataset](https://pan.baidu.com/s/1evLbl4Iyl94khO03aQwaWQ), `8vkf`
+    - Read Dataset below.
     - Add `train.csv` and `test.csv` to `dataset/`
-    - Each line of the `train.csv` has two fields (fact and meta), like:
-      
-        ```python
-        "fact": "2015年11月5日上午，被告人胡某在平湖市乍浦镇的嘉兴市多凌金牛制衣有限公司车间内，与被害人孙某因工作琐事发生口角，后被告人胡某用木制坐垫打伤被害人孙某左腹部。经平湖公安司法鉴定中心鉴定：孙某的左腹部损伤已达重伤二级。",   
-        "meta": 
-        {  
-            "relevant_articles": [234],  
-            "accusation": ["故意伤害"], 
-            "criminals": ["胡某"],  
-            "term_of_imprisonment": 
-            {  
-                "death_penalty": false,  
-                "imprisonment": 12,  
-                "life_imprisonment": false
-            }
-        }
-        ```
+    - Each line of the `train.csv` has two fields (fact and meta). Each line of the `test.csv` has only one field: `fact`, the output is under `outputs/result`
 
-    - Each line of the `test.csv` has only one field: `fact`, the output is under `outputs/result`
     - If you want to evaluate your test score, please modify `main.py` line 181: `is_train=False` to `is_train=True`, make sure your test dataset has two fields like the train dataset.
     - Paths and filenames can be defined in `configs/basic_config.py`
 
@@ -80,19 +63,7 @@ pip install -r requirements.txt
 
 [thunlp/CAIL: Chinese AI & Law Challenge](https://github.com/thunlp/CAIL) Task 1
 
-类别信息是 meta 中的 accusation，共 202 种类别，每个 fact 可能有多个类别。根据统计结果，不同数量的标签大致如下：
-
-```python
-Counter({2: 18600, 
-         1: 85257, 
-         3: 1721, 
-         4: 184, 
-         6: 11, 
-         5: 30, 
-         7: 3, 
-         9: 1, 
-         8: 1})
-```
+类别信息是 meta 中的 accusation，共 202 种类别，每个 fact 可能有多个类别。
 
 
 ## Preprocess
@@ -155,12 +126,6 @@ Counter({2: 18600,
 
 TextCNN 类似于 Ngram 滑动窗口提取特征，MaxPooling 获取重要特征，多个通道获取不同类型的特征。最大的问题是 MaxPooling 丢失了内部结构信息。
 
-```python
-- word token
-- Epoch: 5 -  loss: 0.0160 - auc: 0.9645 - valid_loss: 0.0165 - valid_auc: 0.9643 
-- Score: micro 0.44503259498729947, macro 0.13551127514351746 Average 0.2902719350654085
-```
-
 然后选择 Bert 作为预训练模型，我们选择了[领域 Bert 模型](https://github.com/thunlp/OpenCLaP)，分别尝试了直接使用 Bert 的 classification 信息，TextRCNN 和 TextDPCNN。之所以选择这两个模型，是因为它们在之前的测评中显示的[结果](https://github.com/Tencent/NeuralNLP-NeuralClassifier)较好。
 
 TextRCNN 相当于 RNN + CNN，其基本结构如下图所示：
@@ -169,28 +134,11 @@ TextRCNN 相当于 RNN + CNN，其基本结构如下图所示：
 
 RNN 我们采用双向 LSTM，结果与 embedding 拼接后再接一个 Maxpooling 获取重要特征。
 
-```python
-- Epoch: 5 -  loss: 0.0051 - auc: 0.9977 - valid_loss: 0.0084 - valid_auc: 0.9938
-- Score: micro 0.7211337449560018, macro 0.46419597062649204 Average 0.5926648577912469
-```
-
-增加预处理后的结果稍微提升了一些：
-
-```python
-- Epoch: 5 -  loss: 0.0050 - auc: 0.9978 - valid_loss: 0.0083 - valid_auc: 0.9942
-- Score: micro 0.7309471633795959, macro 0.47763558318007454 Average 0.6042913732798352
-```
-
 DPCNN 可以看作是多个叠加的 CNN，结果如下图所示：
 
 ![](https://ask.qcloudimg.com/http-save/yehe-1178513/hon9vbfkku.jpeg?imageView2/2/w/1620)
 
 先做了两次宽度为 3，filter 数量为 250 个的卷积，然后开始做两两相邻的 MaxPooling（丢失很少的信息，提取更抽象的特征）。每个 block 中，池化后的结果与卷积后的结果相加。
-
-```python
-- Epoch: 5 -  loss: 0.0053 - auc: 0.9970 - valid_loss: 0.0090 - valid_auc: 0.9913
-- Score: micro 0.7231892943779491, macro 0.420145781199929 Average 0.5716675377889391
-```
 
 除了上面介绍的几种模型外，还有其他一些比较常见的模型：
 
